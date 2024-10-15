@@ -36,7 +36,7 @@ const TopNav: React.FC<Props> = ({ threshold }) => {
       <div className={`top-navbar ${isScrolled ? 'scrolled' : ''} w-screen flex items-center justify-center md:justify-between p-5 md:px-12`} style={{ position: isSticky ? 'fixed' : 'relative', top: 0, width: 'screen', zIndex: 1000 }}>
           <Link className="hidden md:block flex" href="/root">
             <div className={`${train.className} font-extrabold text-black`}>
-              <p className="text-[30px]">CloudFun</p>
+              <p className="text-[30px]">CloudFun2</p>
             </div>
           </Link>
           <div className="flex items-center md:justify-between space-x-2 sm:space-x-4 lg:space-x-6">

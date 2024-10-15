@@ -1,5 +1,4 @@
 'use client'
-import HomeNav from './HomeNav';
 import TopNav from './TopNav';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react'

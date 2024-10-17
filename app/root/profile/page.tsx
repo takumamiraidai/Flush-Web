@@ -60,15 +60,15 @@ export default function Page() {
         } catch (error) {
           console.error("プロファイルデータの読み込み中にエラーが発生しました:", error);
         } finally {
-          setLoading(false); // Set loading to false once the data is fetched
+          setLoading(false);
         }
       } else {
         setUser(null);
-        setLoading(false); // Set loading to false if no user is found
+        setLoading(false);
       }
     });
   
-    return () => unsubscribe(); // Clean up the listener on unmount
+    return () => unsubscribe();
   }, []);
   
 
@@ -125,12 +125,13 @@ export default function Page() {
     }));
   }
 
+  
   if (loading) {
-    return <p>Loading...</p>; // Show a loading message while data is being fetched
+    return <div className="w-full text-center py-10">Loading My Profile ...</div>;
   }
 
   if (!user) {
-    return <p>ログインしてください</p>; // ユーザーが認証されていない場合のメッセージ
+    return <div className="w-full text-center py-10">ログインしてください</div>;
   }
 
   return (

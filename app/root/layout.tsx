@@ -2,6 +2,7 @@
 import Nav from '@/app/ui/nav';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ParticleBack from '@/app/ui/ParticleBack';
  
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -12,6 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Nav/>
         </header>
         <main className="flex pb-40">
+            <ParticleBack/>
             {children}
         </main>
         <footer className='p-10 sm:p-20 footer'>

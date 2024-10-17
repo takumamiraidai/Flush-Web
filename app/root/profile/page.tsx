@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, FormEvent } from 'react';
+import React, { useEffect, useState, FormEvent, ChangeEvent } from 'react';
 import auth from '../../firebaseConfig'; // Firebase設定をインポート
 import { onAuthStateChanged, User } from "firebase/auth";
 import FileUpload from '../../ui/fileUpload';
@@ -120,6 +120,14 @@ export default function Page() {
 
   if (!user) {
     return <p>ログインしてください</p>; // ユーザーが認証されていない場合のメッセージ
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   }
 
   return (

@@ -8,7 +8,7 @@ interface FormData {
   id: string;
   name: string;
   imageURL: string;
-  mail: string; 
+  mail: string;
   sns: string;
   course: '情報デザイン' | '情報システム' | '知能システム' | '複雑系' | '無所属' | '教員' | 'その他';
   grade: string;
@@ -27,16 +27,12 @@ export default function Page() {
 
   const [message, setMessage] = useState<string>('');
   const [user, setUser] = useState<User | null>(null); // ユーザーの状態を管理
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         setUser(authUser); // ユーザーの状態を保存
-        
-        setFormData((prevData) => ({
-          ...prevData,
-          id: authUser.uid, // Set the user ID in formData
-        }));
   
         try {
           console.log("MyID: ", authUser.uid);
@@ -44,15 +40,16 @@ export default function Page() {
           if (response.ok) {
             const profileData = await response.json();
             console.log("Profile Data:", profileData);
-            if (profileData.length > 0) {
+            if (profileData && profileData.id === authUser.uid) {
+              // Check if profileData has the expected structure and matches the user ID
               setFormData({
                 id: authUser.uid,
-                name: profileData[0].name || '',
-                imageURL: profileData[0].imageURL || '',
-                mail: profileData[0].mail || authUser.email || '',
-                sns: profileData[0].sns || '',
-                course: profileData[0].course || 'その他',
-                grade: profileData[0].grade || '',
+                name: profileData.name || '',
+                imageURL: profileData.imageURL || '',
+                mail: profileData.mail || authUser.email || '',
+                sns: profileData.sns || '',
+                course: profileData.course || 'その他',
+                grade: profileData.grade || '',
               });
             } else {
               console.warn("プロファイルデータが見つかりません");
@@ -62,9 +59,12 @@ export default function Page() {
           }
         } catch (error) {
           console.error("プロファイルデータの読み込み中にエラーが発生しました:", error);
+        } finally {
+          setLoading(false); // Set loading to false once the data is fetched
         }
       } else {
         setUser(null);
+        setLoading(false); // Set loading to false if no user is found
       }
     });
   
@@ -83,11 +83,10 @@ export default function Page() {
     }));
     console.log(`Uploaded file name: ${fileName}`);
   };
-  
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch('https://cloudfun-api.numb20crown-1102.workers.dev/api/write_profile', {
         method: 'POST',
@@ -96,7 +95,7 @@ export default function Page() {
         },
         body: JSON.stringify(formData),
       });
-  
+
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
         const errorText = await response.text();
@@ -104,7 +103,7 @@ export default function Page() {
         setMessage("Error: " + errorText);
         return;
       }
-  
+
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
         setMessage(data.message || "Profile updated successfully!");
@@ -118,10 +117,6 @@ export default function Page() {
     }
   };
 
-  if (!user) {
-    return <p>ログインしてください</p>; // ユーザーが認証されていない場合のメッセージ
-  }
-
   function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -130,16 +125,23 @@ export default function Page() {
     }));
   }
 
+  if (loading) {
+    return <p>Loading...</p>; // Show a loading message while data is being fetched
+  }
+
+  if (!user) {
+    return <p>ログインしてください</p>; // ユーザーが認証されていない場合のメッセージ
+  }
+
   return (
-    <div className="flex flex-col p-8 space-y-6 max-w-3xl mx-auto"> {/* 幅を制限し、中央揃え */}
+    <div className="flex flex-col p-8 space-y-6 max-w-3xl mx-auto">
       <h3 className="py-4 text-gray-400">My Profile</h3>
-      
-      {/* ユーザー情報の表示 */}
+
       <div className="mb-8 p-4 bg-gray-100 rounded-lg flex items-center">
         <img 
           src={formData.imageURL ? "https://pub-3532cc3aaee14e1e87ea82691c7b0805.r2.dev/" + formData.imageURL : 'default-image-url.jpg'}
           alt="Profile"
-          className="w-40 h-40 rounded-full mr-4" // スペースを調整
+          className="w-40 h-40 rounded-full mr-4"
         />
         <div>
           <p><strong>Name:</strong> {formData.name || '取得できません'}</p>
@@ -149,11 +151,10 @@ export default function Page() {
           <p><strong>Grade:</strong> {formData.grade || '取得できません'}</p>
         </div>
       </div>
-  
 
       <h3 className="py-4 pt-10 text-gray-400">Set Profile</h3>
       <form onSubmit={handleSubmit}>
-        <div className='flex flex-col space-y-4'> {/* スペースを調整 */}
+        <div className='flex flex-col space-y-4'>
           <input
             id="name"
             type="text"
@@ -217,5 +218,4 @@ export default function Page() {
       {message && <p className="py-8">{message}</p>}
     </div>
   );
-  
 }

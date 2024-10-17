@@ -33,15 +33,15 @@ export default function Page() {
       if (authUser) {
         setUser(authUser); // ユーザーの状態を保存
         
-        // authUser.uid を直接使ってユーザープロファイルを取得
         try {
+          console.log("MyID: ", authUser.uid);
           const response = await fetch(`https://cloudfun-api.numb20crown-1102.workers.dev/api/get_profile_by_id?id=${authUser.uid}`);
           if (response.ok) {
             const profileData = await response.json();
             console.log("Profile Data:", profileData);
             if (profileData.length > 0) {
               setFormData({
-                id: authUser.uid, // authUser.uid を直接使用
+                id: authUser.uid,
                 name: profileData[0].name || '',
                 imageURL: profileData[0].imageURL || '',
                 mail: profileData[0].mail || authUser.email || '',

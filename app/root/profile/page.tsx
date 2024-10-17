@@ -33,9 +33,14 @@ export default function Page() {
       if (authUser) {
         setUser(authUser); // ユーザーの状態を保存
         
+        setFormData((prevData) => ({
+          ...prevData,
+          id: authUser.uid, // Set the user ID in formData
+        }));
+  
         try {
           console.log("MyID: ", authUser.uid);
-          const response = await fetch(`https://cloudfun-api.numb20crown-1102.workers.dev/api/get_profile_by_id?id=${authUser.uid}`);
+          const response = await fetch(`https://cloudfun-api.numb20crown-1102.workers.dev/api/get_profile_by_id/?id=${authUser.uid}`);
           if (response.ok) {
             const profileData = await response.json();
             console.log("Profile Data:", profileData);
@@ -62,22 +67,23 @@ export default function Page() {
         setUser(null);
       }
     });
+  
+    return () => unsubscribe(); // Clean up the listener on unmount
   }, []);
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  
 
   const handleFileUpload = (fileName: string) => {
+    if (!formData.id) {
+      console.error('User ID is not set. Cannot upload file.');
+      return;
+    }
     setFormData((prevData) => ({
       ...prevData,
       imageURL: fileName, 
     }));
     console.log(`Uploaded file name: ${fileName}`);
   };
+  
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

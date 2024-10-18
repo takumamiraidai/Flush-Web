@@ -2,7 +2,7 @@
 import Nav from '@/app/ui/nav';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import ParticleBack from '@/app/ui/particleBack';
+import ParticleBack from '@/app/ui/particleback';
  
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

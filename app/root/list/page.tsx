@@ -3,15 +3,20 @@ import TaskCard from '@/app/ui/taskCard';
 import React, { useEffect, useState } from 'react';
 
 interface Task {
-  id: string;
-  title: string;
-  imageURL: string;
-  ownerID: string;
-  num: string;
-  type: string[];
-  tag: string[];
-  content: string;
-  comment: string[];
+  id: string;  //ユーザーID
+  title: string;  //タイトル
+  postData: string;  //投稿日時
+  deadDate: string;  //締め切り
+  imageURL: string;  //画像URL
+  ownerID: string;  //オーナーID
+  num: number;  //募集人数
+  count: number;  //参加人数
+  reward: string;  //報酬
+  type: string[];  //募集役職
+  tag: string[];  //ハッシュタグ
+  content: string[];  //内容リスト
+  imageList: string[];  //画像リスト
+  comment: string[];  //コメント
 }
 
 const fetchTasks = async (): Promise<Task[]> => {
@@ -60,7 +65,7 @@ const TaskList: React.FC = () => {
   }
 
   return (
-    <div className="w-full flex flex-col px-[50px] lg:px-[150px] mx-auto">
+    <div className="w-full flex flex-col p-14 px-[50px] lg:px-[150px] mx-auto">
       <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[70px]"> 
         {tasks.length === 0 ? (
           <p>No tasks available</p>

@@ -6,8 +6,8 @@ import clsx from 'clsx';
 const links = [
   { name: 'Home', href: '/root'},
   { name: 'List', href: '/root/list',},
-  { name: 'Post', href: '/root/post',},
   { name: 'Profile', href: '/root/profile',},
+  { name: '＋', href: '/root/post',},
 ];
 
 export default function NavLinks() {
@@ -21,7 +21,7 @@ export default function NavLinks() {
               href={link.href}
               className={clsx("font-extrabold text-sm sm:text-base lg:text-xl",
                 {
-                  'text-indigo-600 hover:text-indigo-700': pathname === link.href,
+                  'text-sky-300 hover:text-sky-400': pathname === link.href,
                 },
               )}
             >

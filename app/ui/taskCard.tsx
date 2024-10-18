@@ -28,7 +28,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
           <div className="flex flex-col px-4 py-2">
             <span className="font-bold text-lg truncate overflow-hidden whitespace-nowrap text-ellipsis">{task.title}</span>
           </div>
-          <div className="absolute inset-0 bg-red-400 bg-opacity-50 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div className="absolute inset-0 bg-blue-200 bg-opacity-50 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
             <span className="text-white font-extrabold text-4xl">View</span>
           </div>
         </Link>

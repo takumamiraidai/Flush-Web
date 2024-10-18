@@ -1,5 +1,5 @@
 import './ui/global.css';
-import { inter, notojp , train} from '../app/ui/fonts';
+import { inter, notojp , kosugi} from '../app/ui/fonts';
 
 export const metadata = {
   title: 'cloudfun',
@@ -19,7 +19,7 @@ export default function RootLayout({
       <html lang="en">
         <head>
         </head>
-        <body className={`${inter.className} antialiased`}>
+        <body className={`${kosugi.className} antialiased`}>
           {children}
         </body>
       </html>

@@ -1,4 +1,4 @@
-import { Inter, Lusitana, Noto_Serif_JP,Train_One} from 'next/font/google';
+import { Inter, Lusitana, Noto_Serif_JP, Kosugi_Maru} from 'next/font/google';
 import "./global.css";
  
 export const inter = Inter({ subsets: ['latin'] });
@@ -14,7 +14,7 @@ export const notojp = Noto_Serif_JP({
   display: "swap",
 });
 
-export const train = Train_One({
+export const kosugi = Kosugi_Maru({
   weight: ["400", "400"],
   subsets: ["latin"],
   display: "swap",

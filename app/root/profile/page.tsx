@@ -33,6 +33,13 @@ export default function Page() {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         setUser(authUser); // ユーザーの状態を保存
+        
+        // ここでIDをすぐにセット
+        setFormData((prevData) => ({
+          ...prevData,
+          id: authUser.uid,
+          mail: authUser.email || '',
+        }));
   
         try {
           console.log("MyID: ", authUser.uid);
@@ -41,16 +48,14 @@ export default function Page() {
             const profileData = await response.json();
             console.log("Profile Data:", profileData);
             if (profileData && profileData.id === authUser.uid) {
-              // Check if profileData has the expected structure and matches the user ID
-              setFormData({
-                id: authUser.uid,
+              setFormData((prevData) => ({
+                ...prevData,
                 name: profileData.name || '',
                 imageURL: profileData.imageURL || '',
-                mail: profileData.mail || authUser.email || '',
                 sns: profileData.sns || '',
                 course: profileData.course || 'その他',
                 grade: profileData.grade || '',
-              });
+              }));
             } else {
               console.warn("プロファイルデータが見つかりません");
             }
@@ -70,6 +75,7 @@ export default function Page() {
   
     return () => unsubscribe();
   }, []);
+  
   
 
   const handleFileUpload = (fileName: string) => {

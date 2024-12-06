@@ -35,56 +35,51 @@ const MealCalendar: React.FC = () => {
   const [selectedMeal, setSelectedMeal] = useState<MealPlan | null>(null);
   const [weeklyMeals, setWeeklyMeals] = useState<MealPlan[]>([]);
 
-  // 日付に基づいて献立を取得する関数
   const getMealByDate = (date: Date): MealPlan | undefined => {
-    const formattedDate = date.toISOString().split('T')[0]; // yyyy-mm-dd形式に変換
+    const formattedDate = date.toISOString().split('T')[0];
     return mealData.find(meal => meal.date === formattedDate);
   };
 
   const getMealsForWeek = (date: Date) => {
-    const dayOfWeek = date.getDay(); // 日曜日は0、月曜日は1、...、土曜日は6
+    const dayOfWeek = date.getDay();
     const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - dayOfWeek); // その週の月曜日の日付を計算
-  
-    // 週の終了日 (土曜日) を計算
+    startOfWeek.setDate(date.getDate() - dayOfWeek);
+
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 7);
-  
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+
     const weekMeals = mealData.filter((meal) => {
       const mealDate = new Date(meal.date).getTime();
-      const startOfWeekTime = startOfWeek.getTime();
-      const endOfWeekTime = endOfWeek.getTime(); // 正しい終了日時を使用
-  
-      console.log('Meal date:', meal.date, 'Meal timestamp:', mealDate);
-  
-      return mealDate >= startOfWeekTime && mealDate <= endOfWeekTime;
+      return mealDate >= startOfWeek.getTime() && mealDate <= endOfWeek.getTime();
     });
-  
-    setWeeklyMeals(weekMeals); // 週の献立をセット
+
+    setWeeklyMeals(weekMeals);
   };
-  
 
-  // カレンダーの日付変更時の処理
-  const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
-    const meal = getMealByDate(date);
-    setSelectedMeal(meal || null); // 該当する献立を取得
+  const handleDateChange = (date: Date | Date[]) => {
+    const selected = Array.isArray(date) ? date[0] : date;
+    setSelectedDate(selected);
 
-    getMealsForWeek(date); // 日付が変更されるたびにその週の献立を更新
+    const meal = getMealByDate(selected);
+    setSelectedMeal(meal || null);
+
+    getMealsForWeek(selected);
   };
 
   return (
     <div className="flex flex-col items-center">
       <div className="flex">
-          <Calendar
-            onChange={handleDateChange} // カレンダーの日付が変更されたときに処理
-            value={selectedDate}
-          />
+        <Calendar
+          onChange={handleDateChange}
+          value={selectedDate}
+        />
         <div className="px-12 pt-10">
           <h2 className="text-xl font-bold mb-4">選択した日付の献立</h2>
           {selectedMeal ? (
             <div>
-              <h3 className="font-semibold">{selectedDate.toLocaleDateString('ja-JP')} ({selectedDate.toLocaleString('ja-JP', { weekday: 'long' })})</h3>
+              <h3 className="font-semibold">
+                {selectedDate.toLocaleDateString('ja-JP')} ({selectedDate.toLocaleString('ja-JP', { weekday: 'long' })})
+              </h3>
               <p><strong>朝食:</strong> {selectedMeal.breakfast}</p>
               <p><strong>昼食:</strong> {selectedMeal.lunch}</p>
               <p><strong>夕食:</strong> {selectedMeal.dinner}</p>
@@ -100,7 +95,9 @@ const MealCalendar: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {weeklyMeals.map((meal) => (
             <div key={meal.date} className="p-4 border rounded-lg shadow-md">
-              <h3 className="font-semibold">{meal.date} ({new Date(meal.date).toLocaleString('ja-JP', { weekday: 'long' })})</h3>
+              <h3 className="font-semibold">
+                {meal.date} ({new Date(meal.date).toLocaleString('ja-JP', { weekday: 'long' })})
+              </h3>
               <p><strong>朝食:</strong> {meal.breakfast}</p>
               <p><strong>昼食:</strong> {meal.lunch}</p>
               <p><strong>夕食:</strong> {meal.dinner}</p>

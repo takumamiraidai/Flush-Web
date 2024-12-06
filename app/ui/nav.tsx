@@ -29,7 +29,7 @@ function Nav() {
 
   return (
     <div>
-      <TopNav threshold={0}/>
+      <TopNav threshold={1000}/>
     </div>
   );
 }

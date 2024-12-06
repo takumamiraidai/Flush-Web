@@ -4,10 +4,12 @@ import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
 const links = [
-  { name: 'Home', href: '/root'},
-  { name: 'List', href: '/root/list',},
-  { name: 'Profile', href: '/root/profile',},
-  { name: '＋', href: '/root/post',},
+  { name: '献立表', href: '/root'},
+  { name: '材料', href: '/root/ingredient',},
+  { name: '料理', href: '/root/dish',},
+  { name: '発注書', href: '/root/list',},
+  { name: '仕入れ変更', href: '/root/profile',},
+  { name: '出力', href: '/root/post',},
 ];
 
 export default function NavLinks() {

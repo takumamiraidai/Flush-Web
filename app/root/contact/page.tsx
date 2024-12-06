@@ -3,7 +3,7 @@ import React from 'react';
 export default function BuisinessPage() {
   return (
     <div className="px-4 sm:px-10 lg:px-20">
-      <h2 className="pt-10 pb-5 px-2 md:px-8 text-gray-400">特定商取引法に基づく表記</h2>
+      <h2 className="pt-10 pb-5 px-2 md:px-8 text-gray-400">お問い合わせ</h2>
       <div className="py-5 px-4 md:px-12">
         <div className="flex flex-col">
           <div className='py-5'>

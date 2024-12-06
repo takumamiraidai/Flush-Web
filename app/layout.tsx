@@ -2,8 +2,8 @@ import './ui/global.css';
 import { inter, notojp , kosugi} from '../app/ui/fonts';
 
 export const metadata = {
-  title: 'cloudfun',
-  description: 'CloudFun',
+  title: 'nomura',
+  description: 'Nomura System',
   icons: {
     icon: '/favicon.ico',
     apple: '/icon.png',

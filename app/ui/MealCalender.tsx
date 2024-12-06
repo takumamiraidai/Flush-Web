@@ -31,79 +31,56 @@ const mealData: MealData = [
 ];
 
 const MealCalendar: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedMeal, setSelectedMeal] = useState<MealPlan | null>(null);
   const [weeklyMeals, setWeeklyMeals] = useState<MealPlan[]>([]);
 
   const getMealByDate = (date: Date): MealPlan | undefined => {
-    const formattedDate = date.toISOString().split('T')[0];
-    return mealData.find(meal => meal.date === formattedDate);
+    const formattedDate = date.toISOString().split("T")[0];
+    return mealData.find((meal) => meal.date === formattedDate);
   };
 
   const getMealsForWeek = (date: Date) => {
-    const dayOfWeek = date.getDay();
     const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - dayOfWeek);
+    startOfWeek.setDate(date.getDate() - date.getDay());
 
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    const weekMeals = mealData.filter((meal) => {
+    const meals = mealData.filter((meal) => {
       const mealDate = new Date(meal.date).getTime();
       return mealDate >= startOfWeek.getTime() && mealDate <= endOfWeek.getTime();
     });
 
-    setWeeklyMeals(weekMeals);
+    setWeeklyMeals(meals);
   };
 
-  const handleDateChange = (date: Date | Date[]) => {
-    const selected = Array.isArray(date) ? date[0] : date;
-    setSelectedDate(selected);
+  const handleDateChange = (value: unknown) => {
+    if (!value || !(value instanceof Date || Array.isArray(value))) return;
 
-    const meal = getMealByDate(selected);
+    const date = Array.isArray(value) ? value[0] : value;
+    setSelectedDate(date);
+
+    const meal = getMealByDate(date);
     setSelectedMeal(meal || null);
 
-    getMealsForWeek(selected);
+    getMealsForWeek(date);
   };
 
   return (
     <div className="flex flex-col items-center">
-      <div className="flex">
-        <Calendar
-          onChange={handleDateChange}
-          value={selectedDate}
-        />
-        <div className="px-12 pt-10">
-          <h2 className="text-xl font-bold mb-4">選択した日付の献立</h2>
-          {selectedMeal ? (
-            <div>
-              <h3 className="font-semibold">
-                {selectedDate.toLocaleDateString('ja-JP')} ({selectedDate.toLocaleString('ja-JP', { weekday: 'long' })})
-              </h3>
-              <p><strong>朝食:</strong> {selectedMeal.breakfast}</p>
-              <p><strong>昼食:</strong> {selectedMeal.lunch}</p>
-              <p><strong>夕食:</strong> {selectedMeal.dinner}</p>
-            </div>
-          ) : (
-            <p>この日付の献立は設定されていません。</p>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-6 w-full">
-        <h1 className="text-xl font-bold mb-4">この週の献立</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {weeklyMeals.map((meal) => (
-            <div key={meal.date} className="p-4 border rounded-lg shadow-md">
-              <h3 className="font-semibold">
-                {meal.date} ({new Date(meal.date).toLocaleString('ja-JP', { weekday: 'long' })})
-              </h3>
-              <p><strong>朝食:</strong> {meal.breakfast}</p>
-              <p><strong>昼食:</strong> {meal.lunch}</p>
-              <p><strong>夕食:</strong> {meal.dinner}</p>
-            </div>
-          ))}
-        </div>
+      <Calendar onChange={handleDateChange} value={selectedDate} />
+      <div>
+        <h2>選択した日付の献立</h2>
+        {selectedMeal ? (
+          <div>
+            <p>{selectedMeal.breakfast}</p>
+            <p>{selectedMeal.lunch}</p>
+            <p>{selectedMeal.dinner}</p>
+          </div>
+        ) : (
+          <p>データなし</p>
+        )}
       </div>
     </div>
   );

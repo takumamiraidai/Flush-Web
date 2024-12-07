@@ -41,7 +41,15 @@ const MealCalendar: React.FC = () => {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const formattedDate = selectedDate.toISOString().split("T")[0];
+        // ローカルの日付を正しくフォーマットする関数
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0'); // 月は0ベース
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+  
+        const formattedDate = formatDate(selectedDate);
         const response = await fetch(
           `${BASE_URL}/api/get_menu?date=${formattedDate}`
         );
@@ -58,14 +66,22 @@ const MealCalendar: React.FC = () => {
     };
     fetchMenu();
   }, [selectedDate, BASE_URL]);
-
+  
   const handleMenuDishSubmit = async () => {
     try {
-      const formattedDate = selectedDate.toISOString().split("T")[0];
+      // ローカルの日付を正しくフォーマットする関数
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 月は0ベース
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+  
+      const formattedDate = formatDate(selectedDate);
       const dishIds = availableDishes
         .filter((dish) => dishes.includes(dish.name))
         .map((dish) => ({ id: dish.id }));
-
+  
       const response = await fetch(`${BASE_URL}/api/post_menu`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,47 +90,60 @@ const MealCalendar: React.FC = () => {
           dishes: dishIds,
         }),
       });
-
+  
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText);
       }
-
+  
       const responseBody = await response.json();
       setStatusMessage(responseBody.message || "献立登録に成功しました。");
       setDishes([]);
     } catch (error) {
       console.error("Error submitting MenuDish:", error);
       setStatusMessage(
-        `献立登録中にエラーが発生しました: ${error instanceof Error ? error.message : "不明なエラー"}`
+        `献立登録中にエラーが発生しました: ${
+          error instanceof Error ? error.message : "不明なエラー"
+        }`
       );
     }
-  };
+  };  
 
   const handleMenuNumSubmit = async () => {
     try {
+      // ローカルの日付を正しくフォーマットする関数
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 月は0ベース
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+  
+      // フォーマットした日付を取得
+      const formattedDate = formatDate(selectedDate);
+  
       if (!num || num <= 0) {
         setStatusMessage("人数を正しく入力してください。");
         return;
       }
-
-      const formattedDate = selectedDate.toISOString().split("T")[0];
+  
       const response = await fetch(`${BASE_URL}/api/menunum`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: formattedDate, time, num }),
       });
-
+  
       if (!response.ok) {
         throw new Error(`人数登録失敗: ${await response.text()}`);
       }
+  
       setStatusMessage("人数が登録されました！");
     } catch (error) {
       console.error("Error submitting MenuNum:", error);
       setStatusMessage("人数登録中にエラーが発生しました。");
     }
   };
-
+  
   const renderMenu = () => {
     if (!menu || menu.length === 0) {
       return <p>この日の献立はありません。</p>;

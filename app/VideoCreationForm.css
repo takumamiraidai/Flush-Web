@@ -1,0 +1,121 @@
+/* VideoCreationForm.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .form-container {
+    text-align: center;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .styled-textarea {
+    width: 100%;
+    max-width: 500px;
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .styled-textarea:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .video-container {
+    position: relative; /* 親要素にrelativeを設定して、子要素の絶対配置を可能にする */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .video-frame {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .styled-video {
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .styled-textarea {
+    position: absolute;
+    bottom: 23%;
+    left: 68%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 80px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.55);
+    z-index: 2;
+  }
+
+  .styled-output {
+    position: absolute;
+    top: 85%;
+    right: 68%;
+    transform: translateX(50%);
+    width: 60%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.55);
+    z-index: 2; 
+  }
+  
+  .submit-button {
+    position: absolute; /* 動画上にボタンを重ねる */
+    bottom: 400px; /* 下からの位置調整 */
+    left: 50%;
+    transform: translateX(-50%); /* 水平方向に中央揃え */
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: rgba(0, 123, 255, 0.7); /* 半透明の青色背景 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 3; /* ボタンを最前面に配置 */
+  }
+  
+  .submit-button:disabled {
+    background-color: rgba(0, 123, 255, 0.4); /* 無効なボタンは透明度を下げる */
+    cursor: not-allowed;
+  }
+  

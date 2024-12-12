@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       throw new Error('Tundere API did not return valid mothersound');
     }
 
-    // 対応する動画ファイルの収集
+    // 対応するクラウドURLの動画ファイルの収集
     const videoFiles: string[] = [];
     const convertedSound = convertToSound(mothersound);
 
@@ -81,17 +81,20 @@ export async function POST(req: Request) {
     const soundPairs = splitIntoPairs(convertedSound);
 
     for (const pair of soundPairs) {
-      const videoFile = `${pair}.mp4`;
-      const videoFilePath = path.join(process.cwd(), 'public', 'videos', videoFile);
+        var sound = pair;
+        if (pair == 'on' || pair == 'un') { 
+            sound = 'an';
+        }
+      const videoFile = `${sound}.mp4`;
+      // クラウド上の動画URLを生成
+      const videoFileURL = process.env.VIDEO_BASE_URL + `${videoFile}`;
 
       try {
-        // ファイルの存在確認
-        await fs.access(videoFilePath);
-        // 動画ファイルのパスを追加
-        videoFiles.push(`/videos/${videoFile}`);
+        // クラウド上の動画が存在するかを確認する処理を追加する場合はここに
+        videoFiles.push(videoFileURL);
       } catch {
-        console.warn(`Video file not found: ${videoFile}`);
-        throw new Error(`Video file not found: ${videoFile}`);
+        console.warn(`Video file not found: ${videoFileURL}`);
+        throw new Error(`Video file not found: ${videoFileURL}`);
       }
     }
 

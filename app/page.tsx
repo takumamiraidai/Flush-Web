@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import './VideoCreationForm.css'; // CSS ファイルを使用
+import './ui/VideoCreationForm.css';
 
 const VideoCreationForm: React.FC = () => {
   const [prompt, setPrompt] = useState('');
@@ -83,11 +83,6 @@ const VideoCreationForm: React.FC = () => {
 
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit} className="form">
-        <button type="submit" className="submit-button" disabled={loading}>
-          {loading ? 'Creating...' : 'Create Video'}
-        </button>
-      </form>
 
       {error && <p className="error-message">{error}</p>}
 
@@ -100,15 +95,21 @@ const VideoCreationForm: React.FC = () => {
               muted
               autoPlay
               className="styled-video"
-              src="https://pub-236f879296c34fa0ae3be6ed4dd37deb.r2.dev/videos/nn.mp4"
+              src= {process.env.VIDEO_BASE_URL + 'nn.mp4'}
             />
+            <div className="video-overlay"></div>
             <textarea
               className="styled-textarea"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter your prompt"
+              placeholder="会話できるよ"
               rows={4}
             />
+            <form onSubmit={handleSubmit} className="form">
+              <button type="submit" className="submit-button" disabled={loading}>
+                {loading ? '考え中...' : '送信'}
+              </button>
+            </form>
             <div className="styled-output">
                 <div className="speech-bubble">
                   <p>べ、別にあんたのことなんか好きじゃないんだからね！</p>
@@ -120,13 +121,19 @@ const VideoCreationForm: React.FC = () => {
         <div className="video-container">
           <div className="video-frame">
             <video id="mergedVideo" controls muted autoPlay className="styled-video"></video>
+            <div className="video-overlay"></div>
             <textarea
               className="styled-textarea"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter your prompt"
+              placeholder="会話できるよ"
               rows={4}
             />
+            <form onSubmit={handleSubmit} className="form">
+              <button type="submit" className="submit-button" disabled={loading}>
+                {loading ? '考え中...' : '送信'}
+              </button>
+            </form>
             {aiResponse && (
               <div className="styled-output">
                 <div className="speech-bubble">

@@ -100,7 +100,7 @@ const VideoCreationForm: React.FC = () => {
               muted
               autoPlay
               className="styled-video"
-              src="/videos/nn.mp4"
+              src="https://pub-236f879296c34fa0ae3be6ed4dd37deb.r2.dev/videos/nn.mp4"
             />
             <textarea
               className="styled-textarea"

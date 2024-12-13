@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import LoginButton from './LoginButton';
 
 const links = [
   { name: 'Home', href: '/',},
@@ -29,6 +30,7 @@ export default function Nav() {
             );
           })}
         </div>
+        <LoginButton/>
     </div>
 );
 }

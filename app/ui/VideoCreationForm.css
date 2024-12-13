@@ -68,7 +68,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 15%; /* 下3割 */
+    height: 8%; /* 下3割 */
     background-color: rgba(255, 255, 255, 1.0); /* 半透明の白 */
     z-index: 2; /* 動画の上に表示されるようにする */
   }  
@@ -82,7 +82,7 @@ body {
   
   .styled-textarea {
     position: absolute;
-    bottom: 23%;
+    bottom: 7%;
     left: 68%;
     transform: translateX(-50%);
     width: 60%;
@@ -97,7 +97,7 @@ body {
 
   .styled-output {
     position: absolute;
-    top: 85%;
+    top: 65%;
     right: 68%;
     transform: translateX(50%);
     width: 60%;
@@ -111,8 +111,8 @@ body {
   
   .submit-button {
     position: absolute; 
-    bottom: 18%;
-    left: 85%;
+    bottom: 1%;
+    left: 89%;
     transform: translateX(-50%); 
     padding: 10px 20px;
     font-size: 16px;

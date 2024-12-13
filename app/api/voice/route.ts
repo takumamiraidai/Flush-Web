@@ -1,6 +1,8 @@
 // src/app/api/synthesize/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 const VOICE_API_BASE_URL = 'http://10.124.57.95:50021';
 
 export async function POST(req: NextRequest) {

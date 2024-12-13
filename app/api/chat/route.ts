@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs/promises'; // Node.jsのPromiseベースのfs APIを使用
 
-export const runtime = 'nodejs'; // runtimeをnodejsに変更
+export const runtime = 'edge';
 
 interface TundereResponse {
   answer: string;

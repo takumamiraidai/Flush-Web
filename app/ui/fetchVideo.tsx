@@ -7,7 +7,6 @@ interface SingleBlogProps {
     slug: string;
   };
 }
-
 interface Blog {
   slug: string;
   frontMatter: {

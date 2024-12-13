@@ -48,32 +48,44 @@ const VideoCreationForm: React.FC = () => {
       setError('No video files to play');
       return;
     }
-
+  
     const videoElement = document.getElementById('mergedVideo') as HTMLVideoElement;
     let currentIndex = 0;
-
+  
     const playNextVideo = () => {
       if (currentIndex < videoFiles.length) {
         const videoSrc = videoFiles[currentIndex];
         const extension = videoSrc.split('.').pop()?.toLowerCase();
-
+  
         if (extension === 'mp4' || extension === 'webm' || extension === 'ogg') {
           videoElement.src = videoSrc;
-          videoElement
-            .play()
-            .catch((err) => setError(`Failed to play video: ${videoSrc}. Error: ${err.message}`));
+          videoElement.load();
+  
+          // 動画の最後のフレームを保持する
+          videoElement.addEventListener('ended', () => {
+            videoElement.pause();
+            videoElement.currentTime = videoElement.duration;
+          }, { once: true });
+  
+          // 次の動画のロード完了を待つ
+          videoElement.addEventListener('canplay', () => {
+            videoElement.play().catch((err) => setError(`Failed to play video: ${videoSrc}. Error: ${err.message}`));
+          }, { once: true });
+  
+          currentIndex++;
         } else {
           setError(`Unsupported video format: ${videoSrc}. Supported formats are mp4, webm, and ogg.`);
           return;
         }
-
-        currentIndex++;
+      } else {
+        videoElement.removeEventListener('ended', playNextVideo); // 最後の動画終了後にリスナーを解除
       }
     };
-
-    videoElement.addEventListener('ended', playNextVideo);
+  
+    videoElement.addEventListener('ended', playNextVideo); // 次の動画を再生するトリガー
     playNextVideo();
   };
+  
 
   useEffect(() => {
     if (videoFiles.length > 0) {

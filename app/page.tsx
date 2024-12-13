@@ -6,8 +6,8 @@ import './ui/VideoCreationForm.css';
 const VideoCreationForm: React.FC = () => {
   const [prompt, setPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [vowelData, setVowelData] = useState<string | null>(null);
-  const [videoFiles, setVideoFiles] = useState<string[]>([]);
+  const [motherSound, setMothersSound] = useState<string | null>(null);
+  const [videoFile, setVideoFile] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -17,88 +17,69 @@ const VideoCreationForm: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: null,
-          relation: 0,
-          input: prompt,
-        }),
+      const chatResponse = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ relation: 0, input: prompt }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create video');
+      if (!chatResponse.ok) {
+        const errorData = await chatResponse.json();
+        throw new Error(errorData.error || "Failed to fetch AI response");
       }
 
-      const data = await response.json();
-      setAiResponse(data.aiResponse);
-      setVowelData(data.vowelData);
-      setVideoFiles(data.videoFiles || []);
+      const chatData = await chatResponse.json();
+      setAiResponse(chatData.aiResponse);
+
+      const videoResponse = await fetch(
+        "https://rage-tell-leather-walker.trycloudflare.com/merge_videos/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input_str: chatData.motherSound }),
+        }
+      );
+
+      if (!videoResponse.ok) {
+        const videoError = await videoResponse.json();
+        throw new Error(videoError.detail || "Failed to merge videos");
+      }
+
+      const videoBlob = await videoResponse.blob();
+      const videoUrl = URL.createObjectURL(videoBlob);
+      setVideoFile(videoUrl);
     } catch (err: any) {
-      setError(err.message || 'Something went wrong');
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  const playVideosInSequence = () => {
-    if (!videoFiles || videoFiles.length === 0) {
-      setError('No video files to play');
+  const playVideoOnce = () => {
+    if (!videoFile) {
+      setError('No video file to play');
       return;
     }
   
     const videoElement = document.getElementById('mergedVideo') as HTMLVideoElement;
-    let currentIndex = 0;
-  
-    const playNextVideo = () => {
-      if (currentIndex < videoFiles.length) {
-        const videoSrc = videoFiles[currentIndex];
-        const extension = videoSrc.split('.').pop()?.toLowerCase();
-  
-        if (extension === 'mp4' || extension === 'webm' || extension === 'ogg') {
-          videoElement.src = videoSrc;
-          videoElement.load();
-  
-          // 動画の最後のフレームを保持する
-          videoElement.addEventListener('ended', () => {
-            videoElement.pause();
-            videoElement.currentTime = videoElement.duration;
-          }, { once: true });
-  
-          // 次の動画のロード完了を待つ
-          videoElement.addEventListener('canplay', () => {
-            videoElement.play().catch((err) => setError(`Failed to play video: ${videoSrc}. Error: ${err.message}`));
-          }, { once: true });
-  
-          currentIndex++;
-        } else {
-          setError(`Unsupported video format: ${videoSrc}. Supported formats are mp4, webm, and ogg.`);
-          return;
-        }
-      } else {
-        videoElement.removeEventListener('ended', playNextVideo); // 最後の動画終了後にリスナーを解除
-      }
-    };
-  
-    videoElement.addEventListener('ended', playNextVideo); // 次の動画を再生するトリガー
-    playNextVideo();
+    videoElement.play().catch((err) => {
+      setError('Failed to play the video: ' + err.message);
+    });
   };
   
-
   useEffect(() => {
-    if (videoFiles.length > 0) {
-      playVideosInSequence();
+    if (videoFile) {
+      playVideoOnce();
     }
-  }, [videoFiles]);
+  }, [videoFile]); // Trigger only when `videoFile` changes
+  
 
   return (
     <div className="form-container">
 
       {error && <p className="error-message">{error}</p>}
 
-      {(videoFiles.length === 0 || videoFiles === null) ? (
+      {(videoFile === null) ? (
         <div className="video-container">
           <div className="video-frame">
             <video
@@ -132,7 +113,7 @@ const VideoCreationForm: React.FC = () => {
       ) : (
         <div className="video-container">
           <div className="video-frame">
-            <video id="mergedVideo" controls muted autoPlay className="styled-video"></video>
+            <video id="mergedVideo" controls muted src={videoFile} className="styled-video"></video>
             <div className="video-overlay"></div>
             <textarea
               className="styled-textarea"

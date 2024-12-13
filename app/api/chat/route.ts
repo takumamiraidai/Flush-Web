@@ -42,6 +42,8 @@ export async function POST(req: Request) {
       throw new Error('Missing required parameters: relation or input');
     }
 
+    console.log('Tundere API Request:', { relation, input });
+
     const tundereResponse = await fetch(
       `${process.env.TUNDERE_API_BASE_URL}?relation=${encodeURIComponent(
         relation
@@ -65,40 +67,27 @@ export async function POST(req: Request) {
     }
 
     const responseData: TundereResponse = await tundereResponse.json();
+    console.log('Tundere API Response:', responseData);
+
     const { mothersound } = responseData;
 
-    if (!mothersound) {
-      throw new Error('Tundere API did not return valid mothersound');
+    if (!mothersound || typeof mothersound !== 'string') {
+      console.error('Invalid mothersound in Tundere API response:', responseData);
+      return NextResponse.json(
+        { error: 'Tundere API did not return valid mothersound' },
+        { status: 500 }
+      );
     }
 
-    // 対応するクラウドURLの動画ファイルの収集
-    const videoFiles: string[] = [];
-    const convertedSound = convertToSound(mothersound);
+    const sound = convertToSound(mothersound);
 
-    // 2文字ペアを生成
-    const soundPairs = splitIntoPairs(convertedSound);
-
-    for (const pair of soundPairs) {
-        var sound = pair;
-        if (pair == 'on' || pair == 'un') { 
-            sound = 'an';
-        }
-      const videoFile = `${sound}.mp4`;
-      // クラウド上の動画URLを生成
-      const videoFileURL = process.env.VIDEO_BASE_URL + `${videoFile}`;
-
-      try {
-        // クラウド上の動画が存在するかを確認する処理を追加する場合はここに
-        videoFiles.push(videoFileURL);
-      } catch {
-        console.warn(`Video file not found: ${videoFileURL}`);
-        throw new Error(`Video file not found: ${videoFileURL}`);
-      }
-    }
-
-    return NextResponse.json({ aiResponse: responseData.answer, vowelData: convertedSound, videoFiles });
+    return NextResponse.json({
+      aiResponse: responseData.answer,
+      motherSound: sound,
+    });
   } catch (error: any) {
     console.error('Error:', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

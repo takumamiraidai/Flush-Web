@@ -1,9 +1,8 @@
 // src/app/api/synthesize/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from 'process';
 
 export const runtime = 'edge';
-
-const VOICE_API_BASE_URL = 'http://10.124.57.95:50021';
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +10,7 @@ export async function POST(req: NextRequest) {
     const { accentPhrases, speedScale, pitchScale, intonationScale, volumeScale, prePhonemeLength, postPhonemeLength, outputSamplingRate, outputStereo, kana } = body;
 
     // APIへのリクエスト
-    const response = await fetch(`${VOICE_API_BASE_URL}/synthesis`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_VOICE_API_BASE_URL}synthesis`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

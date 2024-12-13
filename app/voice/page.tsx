@@ -26,7 +26,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchSpeakers = async () => {
       try {
-        const response = await axios.get<Speaker[]>("http://10.124.57.95:50021/speakers");
+        const response = await axios.get<Speaker[]>(`${process.env.NEXT_PUBLIC_VOICE_API_BASE_URL}speakers`, {
+          headers: {
+            "ngrok-skip-browser-warning": true,  // ngrokの警告を回避
+          }
+        });
         setSpeakers(response.data);
         console.log("Fetched speakers:", response.data);
         if (response.data.length > 0) {
@@ -55,18 +59,21 @@ const Home: React.FC = () => {
 
     try {
       const queryResponse = await axios.post(
-        "http://10.124.57.95:50021/audio_query",
+        process.env.NEXT_PUBLIC_VOICE_API_BASE_URL + "audio_query",
         null,
         {
           params: {
             text: text,
             speaker: selectedStyle,
           },
+          headers: {
+            "ngrok-skip-browser-warning": true,  // ngrokの警告を回避
+          }
         }
       );
 
       const synthesisResponse = await axios.post(
-        "http://10.124.57.95:50021/synthesis",
+        process.env.NEXT_PUBLIC_VOICE_API_BASE_URL + "synthesis",
         queryResponse.data,
         {
           params: {
@@ -76,6 +83,7 @@ const Home: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
             Accept: "audio/wav",
+            "ngrok-skip-browser-warning": true,  // ngrokの警告を回避
           },
           responseType: "arraybuffer",
         }

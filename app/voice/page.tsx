@@ -28,7 +28,7 @@ const Home: React.FC = () => {
       try {
         const response = await axios.get<Speaker[]>(`${process.env.NEXT_PUBLIC_VOICE_API_BASE_URL}speakers`, {
           headers: {
-            "ngrok-skip-browser-warning": true,  // ngrokの警告を回避
+            //"ngrok-skip-browser-warning": true,  // ngrokの警告を回避
           }
         });
         setSpeakers(response.data);
@@ -67,7 +67,7 @@ const Home: React.FC = () => {
             speaker: selectedStyle,
           },
           headers: {
-            "ngrok-skip-browser-warning": true,  // ngrokの警告を回避
+            //"ngrok-skip-browser-warning": true,  // ngrokの警告を回避
           }
         }
       );
@@ -83,7 +83,7 @@ const Home: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
             Accept: "audio/wav",
-            "ngrok-skip-browser-warning": true,  // ngrokの警告を回避
+            //"ngrok-skip-browser-warning": true,  // ngrokの警告を回避
           },
           responseType: "arraybuffer",
         }

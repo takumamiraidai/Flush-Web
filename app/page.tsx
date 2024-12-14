@@ -15,6 +15,8 @@ interface Speaker {
   styles: SpeakerStyle[];
 }
 
+const videoSpeakers = ["kapibara", "shimada", "tutan", "monarisa", "monarisa-uuid", "woman", "cat"];
+
 const VideoCreationForm: React.FC = () => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
@@ -23,60 +25,72 @@ const VideoCreationForm: React.FC = () => {
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [selectedSpeaker, setSelectedSpeaker] = useState<string>('');
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<string>('shimada');
   const [videoFile, setVideoFile] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+
+  const videoElement = useRef<HTMLVideoElement | null>(null);
+  const audioElement = useRef<HTMLAudioElement | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     try {
-      // Step 1: Fetch AI response
+      // AI応答の取得
       const chatResponse = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ relation: 0, input: prompt }),
       });
-
+  
       if (!chatResponse.ok) {
         const errorData = await chatResponse.json();
         throw new Error(errorData.error || "Failed to fetch AI response");
       }
-
+  
       const chatData = await chatResponse.json();
       setAiResponse(chatData.aiResponse);
-
-      // Step 2: Trigger audio synthesis with AI response
+  
+      const prefix = chatData.dere === 1 ? 'dere/' : 'tun/';
+  
+      // 音声合成の処理
       await handleSynthesis(chatData.aiResponse);
-
-      // Step 3: Fetch and play the merged video
-      const videoResponse = await fetch(
-        process.env.NEXT_PUBLIC_VIDEO_API_BASE_URL + "merge_videos/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ input_str: chatData.motherSound }),
+  
+      if (isVideoEnabled) {
+        // ビデオ生成が有効な場合のみビデオを取得
+        const requestBody = {
+          input_str: chatData.motherSound,
+          dir: prefix + selectedVideo,
+        };
+  
+        const videoResponse = await fetch(
+          process.env.NEXT_PUBLIC_VIDEO_API_BASE_URL + "merge_videos/",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody),
+          }
+        );
+  
+        if (!videoResponse.ok) {
+          const videoError = await videoResponse.json();
+          throw new Error(videoError.detail || "Failed to merge videos");
         }
-      );
-
-      if (!videoResponse.ok) {
-        const videoError = await videoResponse.json();
-        throw new Error(videoError.detail || "Failed to merge videos");
+  
+        const videoBlob = await videoResponse.blob();
+        const videoUrl = URL.createObjectURL(videoBlob);
+        setVideoFile(videoUrl);
       }
-
-      const videoBlob = await videoResponse.blob();
-      const videoUrl = URL.createObjectURL(videoBlob);
-      setVideoFile(videoUrl);
-
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
-
   const handleSynthesis = async (responseText: string) => {
     if (!selectedSpeaker || selectedStyle === null) {
       alert('スピーカーまたはスタイルが選択されていません');
@@ -125,35 +139,44 @@ const VideoCreationForm: React.FC = () => {
     }
   };
 
-  const playVideoOnce = () => {
-    if (!videoFile || !audioUrl) {
-      setError('No video or audio file to play');
-      return;
-    }
+  const playContent = () => {
+    if (isVideoEnabled && videoFile && videoElement.current && audioElement.current) {
+      // ビデオが有効な場合、ビデオと音声を同期再生
+      videoElement.current.onplay = () => {
+        audioElement.current?.play().catch((err) => {
+          console.error('Failed to play audio:', err);
+        });
+      };
   
-    const videoElement = document.getElementById('mergedVideo') as HTMLVideoElement;
-    const audioElement = document.getElementById('audioElement') as HTMLAudioElement;
+      videoElement.current.onpause = () => {
+        audioElement.current?.pause();
+      };
   
-    videoElement.onplay = () => {
-      audioElement.play().catch((err) => {
-        console.error('Failed to play audio:', err);
+      videoElement.current.ontimeupdate = () => {
+        if (
+          audioElement.current &&
+          videoElement.current && Math.abs(videoElement.current.currentTime - audioElement.current.currentTime) > 0.3
+        ) {
+          audioElement.current.currentTime = videoElement.current.currentTime;
+        }
+      };
+  
+      videoElement.current.play().catch((err) => {
+        setError('Failed to play the video: ' + err.message);
       });
-    };
+    } else if (!isVideoEnabled && audioUrl && audioElement.current) {
+      // ビデオが無効な場合、音声のみ再生
+      audioElement.current.play().catch((err) => {
+        setError('Failed to play audio: ' + err.message);
+      });
+    }
+  };
   
-    videoElement.onpause = () => {
-      audioElement.pause();
-    };
+  useEffect(() => {
+    // 音声またはビデオの再生をトリガー
+    playContent();
+  }, [videoFile, audioUrl, isVideoEnabled]);
   
-    videoElement.ontimeupdate = () => {
-      if (Math.abs(videoElement.currentTime - audioElement.currentTime) > 0.3) {
-        audioElement.currentTime = videoElement.currentTime;
-      }
-    };
-  
-    videoElement.play().catch((err) => {
-      setError('Failed to play the video: ' + err.message);
-    });
-  };  
 
   useEffect(() => {
     const fetchSpeakers = async () => {
@@ -176,15 +199,31 @@ const VideoCreationForm: React.FC = () => {
     fetchSpeakers();
   }, []);
 
-  useEffect(() => {
-    if (videoFile && audioUrl) {
-      playVideoOnce();
-    }
-  }, [videoFile, audioUrl]);
-  
-
   return (
+    <div className='pt-20'>
     <div className="form-container">
+      <label>
+        <input
+          type="checkbox"
+          checked={isVideoEnabled}
+          onChange={() => setIsVideoEnabled(!isVideoEnabled)}
+        />
+        ビデオ生成を有効にする
+      </label>
+
+      <select
+        value={selectedVideo}
+        onChange={(e) => {
+          setSelectedVideo(e.target.value);
+        }}
+        style={{ marginRight: '10px' }}
+      >
+        {videoSpeakers.map((speaker) => (
+          <option key={speaker} value={speaker}>
+            {speaker}
+          </option>
+        ))}
+      </select>
       <select
         value={selectedSpeaker}
         onChange={(e) => {
@@ -222,17 +261,19 @@ const VideoCreationForm: React.FC = () => {
 
       {error && <p className="error-message">{error}</p>}
 
-      {(videoFile === null) ? (
+      {(videoFile === null || !isVideoEnabled) ? (
         <div className="video-container">
           <div className="video-frame">
-            <video
-              id="mergedVideo"
-              controls
-              muted
-              autoPlay
-              className="styled-video"
-              src={process.env.VIDEO_BASE_URL + 'nn.mp4'}
-            />
+            {isVideoEnabled ? (
+              <video
+                id="mergedVideo"
+                ref={videoElement}
+                controls
+                muted
+                className="styled-video"
+                src={process.env.VIDEO_BASE_URL + 'nn.mp4'}
+              />
+            ) : null}
             <div className="video-overlay"></div>
             <textarea
               className="styled-textarea"
@@ -256,7 +297,7 @@ const VideoCreationForm: React.FC = () => {
       ) : (
         <div className="video-container">
           <div className="video-frame">
-            <video id="mergedVideo" controls muted autoPlay src={videoFile} className="styled-video"></video>
+            <video id="mergedVideo" ref={videoElement} controls muted autoPlay src={videoFile} className="styled-video"></video>
             <div className="video-overlay"></div>
             <textarea
               className="styled-textarea"
@@ -281,8 +322,9 @@ const VideoCreationForm: React.FC = () => {
         </div>
       )}
       {audioUrl && (
-        <audio id="audioElement" src={audioUrl}></audio>
+        <audio id="audioElement" ref={audioElement} src={audioUrl}></audio>
       )}
+    </div>
     </div>
   );
 };

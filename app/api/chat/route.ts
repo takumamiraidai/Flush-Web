@@ -5,8 +5,8 @@ export const runtime = 'edge';
 interface TundereResponse {
   answer: string;
   new_relation: string;
-  tun: number;
-  dere: number;
+  tun: string;
+  dere: string;
   mothersound: string;
 }
 
@@ -81,9 +81,15 @@ export async function POST(req: Request) {
 
     const sound = convertToSound(mothersound);
 
+    var feel = 0;
+    if(responseData.dere !== '普通') {
+      feel = 1;
+    }
+
     return NextResponse.json({
       aiResponse: responseData.answer,
       motherSound: sound,
+      dere: feel
     });
   } catch (error: any) {
     console.error('Error:', error.message);

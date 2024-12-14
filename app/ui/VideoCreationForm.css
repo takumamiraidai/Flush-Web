@@ -1,146 +1,236 @@
 /* VideoCreationForm.css */
 
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .form-container {
-    text-align: center;
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    width: 100%;
-  }
-  
-  .title {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .styled-textarea {
-    width: 100%;
-    max-width: 500px;
-    height: 100px;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    box-sizing: border-box;
-  }
-  
-  .styled-textarea:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-  
-  .video-container {
-    position: relative; /* 親要素にrelativeを設定して、子要素の絶対配置を可能にする */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .video-frame {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-  }
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-  .video-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 8%; /* 下3割 */
-    background-color: rgba(255, 255, 255, 1.0); /* 半透明の白 */
-    z-index: 2; /* 動画の上に表示されるようにする */
-  }  
-  
-  .styled-video {
-    width: 100%;
-    height: auto;
-    position: relative;
-    z-index: 1;
-  }
-  
+.form-container {
+  text-align: center;
+  background: #ffffff;
+  padding: 20px;
+  padding-bottom: 50px; /* ボタン分のスペースを追加 */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+}
+
+.title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.styled-textarea {
+  width: 100%;
+  max-width: 500px;
+  height: 100px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.styled-textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.video-container {
+  position: relative; /* 親要素にrelativeを設定して、子要素の絶対配置を可能にする */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.video-frame {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+}
+
+.video-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8%; /* 下3割 */
+  background-color: rgba(255, 255, 255, 1); /* 半透明の白 */
+  z-index: 2; /* 動画の上に表示されるようにする */
+}
+
+.styled-video {
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.styled-textarea {
+  position: absolute;
+  bottom: 7%;
+  left: 68%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 80px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.55);
+  z-index: 2;
+}
+
+.styled-output {
+  position: absolute;
+  top: 65%;
+  right: 68%;
+  transform: translateX(50%);
+  width: 60%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.55);
+  z-index: 2;
+}
+
+.submit-button {
+  position: absolute;
+  bottom: 1%;
+  left: 89%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: rgba(0, 123, 255, 0.7);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 3;
+  width: 100px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.submit-button:disabled {
+  background-color: rgba(0, 123, 255, 0.4);
+  cursor: not-allowed;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+}
+
+.top-navbar {
+  width: 100%;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
   .styled-textarea {
-    position: absolute;
-    bottom: 7%;
-    left: 68%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 80px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.55);
-    z-index: 2;
+    /*右のテキスト打ち込み場所 */
+    width: 40%; /* スマホ画面で幅を広く設定 */
+    left: 79%;
+
+    height: 10%; /* 高さを少し低くして操作性向上 */
+    font-size: 14px; /* フォントサイズを縮小 */
   }
 
   .styled-output {
-    position: absolute;
-    top: 65%;
-    right: 68%;
-    transform: translateX(50%);
-    width: 60%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.55);
-    z-index: 2; 
+    /*左のテキスト打ち込み場所 */
+    width: 50%; /* スマホ画面で幅を広く設定 */
+    font-size: 14px; /* フォントサイズを縮小 */
+    right: 74%;
   }
-  
+
+  .form-container {
+    padding-top: 0; /* 上部のpaddingを消す */
+  }
+
   .submit-button {
-    position: absolute; 
-    bottom: 1%;
+    position: absolute;
+    bottom: 0%;
     left: 89%;
-    transform: translateX(-50%); 
-    padding: 10px 20px;
-    font-size: 16px;
+    transform: translateX(-50%);
+    padding: 1% 1%;
+    font-size: 1rem;
     background-color: rgba(0, 123, 255, 0.7);
     color: white;
-    border: none;
+    border: 2px solid #ccc;
     border-radius: 5px;
     cursor: pointer;
     z-index: 3;
-    width: 100px; 
+
     text-align: center;
     white-space: nowrap;
   }
-  
-  .submit-button:disabled {
-    background-color: rgba(0, 123, 255, 0.4);
-    cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+  .form-container {
+    padding-top: 0; /* 上部のpaddingを消す */
   }
-  
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: white;
+  .video-frame {
+    width: 200%; /* 動画コンテナを画面幅に合わせる */
   }
-  
-  .top-navbar {
-    width: 100%;
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .styled-video {
+    width: 100%; /* 動画そのものをコンテナに合わせる */
+    height: auto; /* 高さを自動調整 */
   }
+  .styled-textarea {
+    /*右のテキスト打ち込み場所 */
+    width: 40%; /* スマホ画面で幅を広く設定 */
+    left: 79%;
+
+    height: 10%; /* 高さを少し低くして操作性向上 */
+    font-size: 14px; /* フォントサイズを縮小 */
+  }
+
+  .styled-output {
+    /*左のテキスト打ち込み場所 */
+    width: 50%; /* スマホ画面で幅を広く設定 */
+    font-size: 14px; /* フォントサイズを縮小 */
+    right: 74%;
+  }
+  .submit-button {
+    position: absolute;
+    bottom: 0%;
+    left: 89%;
+    transform: translateX(-70%);
+    padding: 1% 0.5%;
+    font-size: 1rem;
+    background-color: rgba(0, 123, 255, 0.7);
+    color: black; /*しるしのため*/
+    border: none;
+
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 3;
+
+    text-align: center;
+    white-space: nowrap;
+  }
+}

@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from "react";
+import axios from "axios";
 
 interface SpeakerStyle {
   name: string;
@@ -18,26 +19,23 @@ const Home: React.FC = () => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
-  const [selectedSpeaker, setSelectedSpeaker] = useState<string>('');
+  const [selectedSpeaker, setSelectedSpeaker] = useState<string>("");
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null);
   const textRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchSpeakers = async () => {
       try {
-        const response = await fetch('/api/speakers');
-        if (!response.ok) {
-          throw new Error('Failed to fetch speakers');
-        }
-        const data = await response.json();
-        setSpeakers(data);
-        if (data.length > 0) {
-          setSelectedSpeaker(data[0].speaker_uuid);
-          setSelectedStyle(data[0].styles[0]?.id || 0);
+        const response = await axios.get<Speaker[]>('/api/speakers');
+        setSpeakers(response.data);
+        console.log("Fetched speakers:", response.data);
+        if (response.data.length > 0) {
+          setSelectedSpeaker(response.data[0].speaker_uuid);
+          setSelectedStyle(response.data[0].styles[0]?.id || 0);
         }
       } catch (error) {
-        console.error('Error fetching speakers:', error);
-        alert('スピーカー一覧の取得に失敗しました');
+        console.error("Failed to fetch speakers:", error);
+        alert("スピーカー一覧の取得に失敗しました");
       }
     };
     fetchSpeakers();
@@ -46,49 +44,43 @@ const Home: React.FC = () => {
   const handleSynthesis = async () => {
     const text = textRef.current?.value;
     if (!text) {
-      alert('テキストを入力してください');
+      alert("テキストを入力してください");
       return;
     }
+
+    console.log("Synthesizing audio with speaker:", selectedSpeaker);
 
     setIsLoading(true);
     setAudioUrl(null);
 
     try {
-      const response = await fetch('/api/voice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text,
-          speaker: selectedSpeaker,
-          style: selectedStyle,
-        }),
+      const response = await axios.post('/api/synthesis', {
+        text,
+        speaker: selectedSpeaker,
+        style: selectedStyle,
+      }, {
+        responseType: 'arraybuffer',
       });
 
-      if (!response.ok) {
-        throw new Error('音声合成に失敗しました');
-      }
-
-      const audioBlob = await response.blob();
+      const audioBlob = new Blob([response.data], { type: "audio/wav" });
       const url = URL.createObjectURL(audioBlob);
       setAudioUrl(url);
     } catch (error) {
-      console.error('Error during synthesis:', error);
-      alert((error as any).message || '音声合成に失敗しました');
+      console.error("Error during synthesis:", error);
+      alert("音声合成に失敗しました");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h2>音声合成</h2>
       <input
         type="text"
         ref={textRef}
         placeholder="テキストを入力してください"
-        style={{ width: '300px', marginRight: '10px' }}
+        style={{ width: "300px", marginRight: "10px" }}
       />
       <select
         value={selectedSpeaker}
@@ -100,7 +92,7 @@ const Home: React.FC = () => {
             setSelectedStyle(speaker.styles[0]?.id || null);
           }
         }}
-        style={{ marginRight: '10px' }}
+        style={{ marginRight: "10px" }}
       >
         {speakers.map((speaker) => (
           <option key={speaker.speaker_uuid} value={speaker.speaker_uuid}>
@@ -111,9 +103,9 @@ const Home: React.FC = () => {
 
       {selectedSpeaker && (
         <select
-          value={selectedStyle || ''}
+          value={selectedStyle || ""}
           onChange={(e) => setSelectedStyle(Number(e.target.value))}
-          style={{ marginRight: '10px' }}
+          style={{ marginRight: "10px" }}
         >
           {speakers
             .find((speaker) => speaker.speaker_uuid === selectedSpeaker)
@@ -127,13 +119,13 @@ const Home: React.FC = () => {
 
       <button
         onClick={handleSynthesis}
-        disabled={isLoading || speakers.length === 0 || selectedSpeaker === ''}
+        disabled={isLoading || speakers.length === 0 || selectedSpeaker === ""}
       >
-        {isLoading ? '生成中...' : '音声を生成'}
+        {isLoading ? "生成中..." : "音声を生成"}
       </button>
 
       {audioUrl && (
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: "20px" }}>
           <audio controls src={audioUrl} autoPlay>
             Your browser does not support the audio element.
           </audio>

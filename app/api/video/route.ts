@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const { inputStr } = await req.json();
 
     // External API request
-    const response = await fetch('https://rage-tell-leather-walker.trycloudflare.com/merge_videos/', {
+    const response = await fetch(process.env.NEXT_PUBLIC_VIDEO_API_BASE_URL + 'merge_videos/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
